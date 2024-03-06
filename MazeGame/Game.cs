@@ -147,6 +147,8 @@ namespace MazeGame
             //draw
             Console.Clear();
 
+            WriteColor("Your Playing [m4z5G0ME] Developed by [DANTE] \n", ConsoleColor.Blue);
+
             string screen = "";
 
             for (int y = 0; y < levelMap.GetLength(1); y++)
