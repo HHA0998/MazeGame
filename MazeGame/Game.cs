@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Xml.Schema;
 
 namespace MazeGame
@@ -27,19 +28,19 @@ namespace MazeGame
         {
           { "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", ".", ".", ".", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", ".", ".", ".", ".", ".", ".", ".", "1", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", ".", ".", ".", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
@@ -53,14 +54,28 @@ namespace MazeGame
 
         bool exit = false;
 
-        //CONSTRUCTOR HERE
-        public Game()
-        {
-            //GAME LOOP
-            xBoarder = levelMap.GetLength(0) - 1;
-            yBoarder = levelMap.GetLength(1) - 1;
+        bool debug = false;
 
-            Draw();
+        string chars = "x";
+        //CONSTRUCTOR HERE
+        public Game(string chars)
+        {
+            //string chars = "x";
+            //GAME LOOP
+            Console.WriteLine("Want to enter debug mode? : y to accept");
+            string userChoice = Console.ReadLine();
+            if (userChoice == "y" || userChoice == "Y")
+            {
+                debug = true;
+                DrawCol(chars);
+            }
+            else
+            {
+                Draw(chars);
+                debug = false;
+            }
+                xBoarder = levelMap.GetLength(0) - 1;
+            yBoarder = levelMap.GetLength(1) - 1;
             while (exit == false)
             {
                 //Call functions here
@@ -68,10 +83,16 @@ namespace MazeGame
 
                 Update();
 
-                Draw();
-
-
-
+                if (debug == true)
+                {
+                    DrawCol(chars);
+                }
+                else
+                {
+                    Draw(chars);
+                }
+                //Thread.Sleep(100);
+                //Console.Clear();
             }
 
         }
@@ -112,6 +133,10 @@ namespace MazeGame
 
         void Update()
         {
+            //store previouse position
+            int xPosPreviouse = xPos;
+            int yPoxPreviouse = yPos;
+
             //update Logic
             yPos += yDirInput;
             xPos += xDirInput;
@@ -137,12 +162,19 @@ namespace MazeGame
                 yPos = levelMap.GetLength(1) - 2;
             }
 
+            if (levelMap[yPos, xPos] == "0")
+            {
+                xPos = xPosPreviouse;
+                yPos = yPoxPreviouse;
+            }
+
+
         }
         // length or xPos = levelMap.GetLength(0)
         // height or yPos = levelMap.GetLength(1)
 
 
-        void Draw()
+        void Draw(string player)
         {
             //draw
             Console.Clear();
@@ -158,7 +190,7 @@ namespace MazeGame
                     // draw player
                     if (yPos == y && xPos == x)
                     {
-                        screen += " #";
+                        screen += " " + player;
                     }
                     // draw boarder
                     else if (yBoarder == y || y == 0)
@@ -186,7 +218,65 @@ namespace MazeGame
 
             WriteColor("Ypos = [" + yPos + "] : " + "Xpos = [" + xPos + "] ", ConsoleColor.Green);
         }
+        void DrawCol(string player)
+        {
+            Console.Clear();
 
+            WriteColor("Your Playing [m4z5G0ME] Developed by [DANTE] \n", ConsoleColor.Blue);
+
+            string screen = "";
+
+            for (int y = 0; y < levelMap.GetLength(1); y++)
+            {
+                for (int x = 0; x < levelMap.GetLength(0); x++)
+                {
+                    // Draw player
+                    if (yPos == y && xPos == x)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write(" " + player);
+                        Console.ResetColor();
+                        screen += " #";
+                    }
+                    else
+                    {
+                        // Draw borders
+                        if (y == 0 || y == levelMap.GetLength(1) - 1)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write("[]");
+                            Console.ResetColor();
+                            screen += "[]";
+                        }
+                        else if (x == 0)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write(" |");
+                            screen += " |";
+                            Console.ResetColor();
+                        }
+                        else if (x == levelMap.GetLength(0) - 1)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write("| ");
+                            screen += "| ";
+                            Console.ResetColor();
+                        }
+                        else
+                        {
+                            Console.Write(" " + levelMap[y, x]);
+                            screen += " " + levelMap[y, x];
+                        }
+                    }
+                    screen += "\n";
+                }
+                // Move to the next line after drawing each row
+                Console.WriteLine();
+            }
+            Console.ResetColor();
+
+            WriteColor("\n Ypos = [" + yPos + "] : " + "Xpos = [" + xPos + "] ", ConsoleColor.Green);
+        }
 
         // usage: WriteColor("This is my [message] with inline [color] changes.", ConsoleColor.Yellow);
         static void WriteColor(string message, ConsoleColor color)

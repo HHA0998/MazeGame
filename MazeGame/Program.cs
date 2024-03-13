@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,7 +12,8 @@ namespace MazeGame
     {
         static void Main(string[] args)
         {
-            new Game();
+            string chars = "s";
+            new Game(chars);
         }
     }
 }
