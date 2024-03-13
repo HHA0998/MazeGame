@@ -12,8 +12,14 @@ namespace MazeGame
     {
         static void Main(string[] args)
         {
-            string chars = "s";
-            new Game(chars);
+            //define
+            bool playing = false;
+            playing = true;
+
+            while (playing == true)
+            {
+                new Game();
+            }
         }
     }
 }

@@ -12,34 +12,25 @@ namespace MazeGame
     internal class Game
     {
         //CLASS VARIABLES
-
-        //diarection input
-        int xDirInput = 0;
-        int yDirInput = 0;
-
-        //player posoition
-        int xPos = 10;
-        int yPos = 10;
+        Player player;
 
         //world size
-        //int length = 25;
-        //int height = 25;
         string[,] levelMap =
         {
           { "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", "0", ".", ".", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0", ".", "0"},
           { "0", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
-          { "0", ".", ".", ".", ".", ".", ".", ".", "1", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
+          { "0", ".", ".", ".", ".", ".", ".", ".", "1", ".", ".", ".", ".", ".", ".", ".", "0", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
           { "0", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "0"},
@@ -56,25 +47,16 @@ namespace MazeGame
 
         bool debug = false;
 
+        int speed = 1;
+
         string chars = "x";
         //CONSTRUCTOR HERE
-        public Game(string chars)
+        public Game()
         {
-            //string chars = "x";
+            player = new Player(this);
             //GAME LOOP
-            Console.WriteLine("Want to enter debug mode? : y to accept");
-            string userChoice = Console.ReadLine();
-            if (userChoice == "y" || userChoice == "Y")
-            {
-                debug = true;
-                DrawCol(chars);
-            }
-            else
-            {
-                Draw(chars);
-                debug = false;
-            }
-                xBoarder = levelMap.GetLength(0) - 1;
+            Draw();
+            xBoarder = levelMap.GetLength(0) - 1;
             yBoarder = levelMap.GetLength(1) - 1;
             while (exit == false)
             {
@@ -83,103 +65,29 @@ namespace MazeGame
 
                 Update();
 
-                if (debug == true)
-                {
-                    DrawCol(chars);
-                }
-                else
-                {
-                    Draw(chars);
-                }
-                //Thread.Sleep(100);
-                //Console.Clear();
+                Draw();
             }
 
         }
         //FUNCTIONS HERE
 
-
         void Inputs()
         {
-            ConsoleKey input = Console.ReadKey().Key;
-            switch (input)
-            {
-                case ConsoleKey.W:
-                    yDirInput = -1;
-                    break;
-                case ConsoleKey.S:
-                    yDirInput = +1;
-                    break;
-                case ConsoleKey.A:
-                    xDirInput = -1;
-                    break;
-                case ConsoleKey.D:
-                    xDirInput = +1;
-                    break;
-                case ConsoleKey.UpArrow:
-                    yDirInput = -1;
-                    break;
-                case ConsoleKey.DownArrow:
-                    yDirInput = +1;
-                    break;
-                case ConsoleKey.LeftArrow:
-                    xDirInput = -1;
-                    break;
-                case ConsoleKey.RightArrow:
-                    xDirInput = +1;
-                    break;
-            }
+            player.GetInput();
+           
         }
 
         void Update()
         {
-            //store previouse position
-            int xPosPreviouse = xPos;
-            int yPoxPreviouse = yPos;
-
-            //update Logic
-            yPos += yDirInput;
-            xPos += xDirInput;
-
-            //reset diacrection input
-            yDirInput = 0;
-            xDirInput = 0;
-
-            if (xPos < 1)
-            {
-                xPos = 1;
-            }
-            if (yPos < 1)
-            {
-                yPos = 1;
-            }
-            if (xPos > 18)
-            {
-                xPos = levelMap.GetLength(0) - 2;
-            }
-            if (yPos > 18)
-            {
-                yPos = levelMap.GetLength(1) - 2;
-            }
-
-            if (levelMap[yPos, xPos] == "0")
-            {
-                xPos = xPosPreviouse;
-                yPos = yPoxPreviouse;
-            }
-
+            player.Update(levelMap.GetLength(0), levelMap.GetLength(1));
 
         }
-        // length or xPos = levelMap.GetLength(0)
-        // height or yPos = levelMap.GetLength(1)
-
-
-        void Draw(string player)
+        void Draw()
         {
             //draw
             Console.Clear();
 
-            WriteColor("Your Playing [m4z5G0ME] Developed by [DANTE] \n", ConsoleColor.Blue);
+            WriteColor("Your Playing [m4z5G0ME] Developed by [Dante] \n", ConsoleColor.Blue);
 
             string screen = "";
 
@@ -188,12 +96,12 @@ namespace MazeGame
                 for (int x = 0; x < levelMap.GetLength(0); x++)
                 {
                     // draw player
-                    if (yPos == y && xPos == x)
+                    if (player.IsInPosition(new Vector2(x,y)))
                     {
-                        screen += " " + player;
+                        screen += " #";
                     }
                     // draw boarder
-                    else if (yBoarder == y || y == 0)
+                     if (yBoarder == y || y == 0)
                     {
                         screen += "[]";
                     }
@@ -216,68 +124,8 @@ namespace MazeGame
             }
             Console.WriteLine(screen);
 
-            WriteColor("Ypos = [" + yPos + "] : " + "Xpos = [" + xPos + "] ", ConsoleColor.Green);
+        //WriteColor("Ypos = [" + playerPosition.y + "] : " + "Xpos = [" + playerPosition.x + "] ", ConsoleColor.Green);
         }
-        void DrawCol(string player)
-        {
-            Console.Clear();
-
-            WriteColor("Your Playing [m4z5G0ME] Developed by [DANTE] \n", ConsoleColor.Blue);
-
-            string screen = "";
-
-            for (int y = 0; y < levelMap.GetLength(1); y++)
-            {
-                for (int x = 0; x < levelMap.GetLength(0); x++)
-                {
-                    // Draw player
-                    if (yPos == y && xPos == x)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write(" " + player);
-                        Console.ResetColor();
-                        screen += " #";
-                    }
-                    else
-                    {
-                        // Draw borders
-                        if (y == 0 || y == levelMap.GetLength(1) - 1)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write("[]");
-                            Console.ResetColor();
-                            screen += "[]";
-                        }
-                        else if (x == 0)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write(" |");
-                            screen += " |";
-                            Console.ResetColor();
-                        }
-                        else if (x == levelMap.GetLength(0) - 1)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.Write("| ");
-                            screen += "| ";
-                            Console.ResetColor();
-                        }
-                        else
-                        {
-                            Console.Write(" " + levelMap[y, x]);
-                            screen += " " + levelMap[y, x];
-                        }
-                    }
-                    screen += "\n";
-                }
-                // Move to the next line after drawing each row
-                Console.WriteLine();
-            }
-            Console.ResetColor();
-
-            WriteColor("\n Ypos = [" + yPos + "] : " + "Xpos = [" + xPos + "] ", ConsoleColor.Green);
-        }
-
         // usage: WriteColor("This is my [message] with inline [color] changes.", ConsoleColor.Yellow);
         static void WriteColor(string message, ConsoleColor color)
         {
@@ -300,6 +148,10 @@ namespace MazeGame
             Console.WriteLine();
         }
 
+        public bool CheckCollision(Vector2 mapPoint)
+        {
+            return levelMap[mapPoint.y, mapPoint.x] == "0";
+        }
 
     }
 }
