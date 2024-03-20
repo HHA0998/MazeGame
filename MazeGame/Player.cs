@@ -121,7 +121,7 @@ namespace MazeGame
             if (game.CheckLevelBeat(playerPosition))
             {
                 string levelnumber = ("level" + level + ".txt");
-                // Game.LoadLevel(levelnumber);
+                 game.LoadLevel(levelnumber);
                 level++;
             }
 
